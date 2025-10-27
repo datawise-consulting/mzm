@@ -1,4 +1,5 @@
 packages <- c("tidyverse",
+              "dplyr",
               "sf",
               "svDialogs",
               "optparse")
