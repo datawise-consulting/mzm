@@ -74,10 +74,6 @@ define_geo_table_schema <- function(geo_level) {
   }
 }
 
-fit_county_table_schema <- function(data, id, county_fips, county_name, county_parcel_id_field_name) {
-  data %>% select(id = id, county_fips = county_fips, county_name = county_name, county_parcel_id_field_name = county_parcel_id_field_name)
-}
-
 ### Process data
 # read input geojson
 geodata <- sf::st_read(input_file)
