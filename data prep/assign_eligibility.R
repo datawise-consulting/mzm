@@ -80,5 +80,5 @@ parcelzone_oks <- parcelzone_attrs %>%
 
 # old
 # parcel_eligibility_pq <- read.csv(file.path(proj_root, "data/data modeling/pilot", "parcel_eligibility_pq.csv"))
-write.csv(parcelzone_oks, file.path(proj_root, "data/data modeling/pilot", "parcel_eligibility_pq.csv"), row.names = FALSE, na="")
+write.csv(parcelzone_oks, file.path(proj_root, "data/data modeling/pilot", "parcel_eligibility.csv"), row.names = FALSE, na="")
 
