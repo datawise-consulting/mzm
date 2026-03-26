@@ -15,18 +15,18 @@ if (!dir.exists(outpath)) {
 }
 st_write(
   parcel_polys,
-  file.path(outpath, str_c("parcel_geos ", today, ".geojson")),
+  file.path(outpath, "parcel_geos.geojson"),
   delete_dsn = TRUE
 )
 write.csv(
   parcel_attrs,
-  file.path(outpath, str_c("parcel_points ", today, ".csv")),
+  file.path(outpath, "parcel_points.csv"),
   row.names = FALSE,
   na = ""
 )
 write.csv(
   parcelzone_oks,
-  file.path(outpath, str_c("parcel_eligibility ", today, ".csv")),
+  file.path(outpath, "parcel_eligibility.csv"),
   row.names = FALSE, 
   na=""
 )
