@@ -23,7 +23,7 @@ exclude <- c(
 juri_parcelzones_files <-
   list.files(
     path = file.path(inpath, str_c(counties, " County")),
-    pattern = "parcelzones for QC\\.geojson",
+    pattern = "parcelzones for QC\\.geojson|parcelzones\\.geojson",
     full.names = T,
     recursive = T,
     ignore.case = T
