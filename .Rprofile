@@ -10,6 +10,8 @@ proj2243_root <- file.path(
   "2243 MAP Zoning Atlas"
 )
 
+parcelzone_fields <- c("FID", "PIN", "Parcel_Jurisdiction_FIPS", "Parcel_Jurisdiction_Name", "Parcel_County_Name", "Parcel_Address", "Jurisdiction_Zone_ID", "zonecode", "isVacant", "SQFT", "geometry", "lat", "long", "Polygon_ID")
+
 # shouldn't have to do this. should load automatically from renv, but it doesn't
 packages <- c(
   "tidyverse",
