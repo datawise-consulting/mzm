@@ -1,22 +1,4 @@
-zone_attrs <- read_excel(file.path(proj2243_root, "data/MAP zones and jurisdictions/Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx"))
-
-# saved in .RData
-# parcelzone_fields <- c(
-#   "FID",
-#   "PIN",
-#   "Parcel_Jurisdiction_FIPS",
-#   "Parcel_Jurisdiction_Name",
-#   "Parcel_County_Name",
-#   "Parcel_Address",
-#   "Jurisdiction_Zone_ID",
-#   "zonecode",
-#   "isVacant",
-#   "SQFT",
-#   "geometry",
-#   "lat",
-#   "long",
-#   "Polygon_ID"
-# )
+# zone_attrs <- read_excel(file.path(proj2243_root, "data/MAP zones and jurisdictions/Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx"))
 
 zone_attrs_clean <- zone_attrs %>% 
   rename(Jurisdiction_Zone_ID = `Jurisdiction Zone ID`) %>%

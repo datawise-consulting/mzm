@@ -1,0 +1,6 @@
+zone_polys <- atlas_parcelzones %>% 
+  group_by(Jurisdiction_Zone_ID) %>%
+  st_as_sf() %>%
+  summarise()
+
+zones <- merge(zone_polys, select(zone_attrs, matches("^Jurisdiction"), matches("District Name"), `Type of Zoning District`), by.x = "Jurisdiction_Zone_ID", by.y = "Jurisdiction Zone ID")
