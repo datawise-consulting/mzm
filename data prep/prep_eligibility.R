@@ -26,12 +26,12 @@ parcelzone_attrs <- merge(parcel_attrs, zone_attrs_clean, by = "Jurisdiction_Zon
 
 parcelzone_oks <- parcelzone_attrs %>%
   mutate(
-   `ok1-Unit Treatment` = as.numeric(`1-Unit Treatment` == "Allowed/Conditional"),
-   `ok2-Unit Treatment` = as.numeric(`2-Unit Treatment` == "Allowed/Conditional"),
-   `ok3-Unit Treatment` = as.numeric(`3-Unit Treatment` == "Allowed/Conditional"),
-   `ok4-Unit Treatment` = as.numeric(`4-Unit Treatment` == "Allowed/Conditional"),
-   `ok5+-Unit Treatment` = as.numeric(`5+-Unit Treatment` == "Allowed/Conditional"),
-   `okADU Treatment` = as.numeric(`Accessory Dwelling Unit (ADU) Treatment` == "Allowed/Conditional"),
+   `ok1-Unit Treatment` = as.numeric(`1-Unit Treatment` == "Allowed/Conditional" | `1-Unit Treatment` == "Public Hearing"),
+   `ok2-Unit Treatment` = as.numeric(`2-Unit Treatment` == "Allowed/Conditional" | `2-Unit Treatment` == "Public Hearing"),
+   `ok3-Unit Treatment` = as.numeric(`3-Unit Treatment` == "Allowed/Conditional" | `3-Unit Treatment` == "Public Hearing"),
+   `ok4-Unit Treatment` = as.numeric(`4-Unit Treatment` == "Allowed/Conditional" | `4-Unit Treatment` == "Public Hearing"),
+   `ok5+-Unit Treatment` = as.numeric(`5+-Unit Treatment` == "Allowed/Conditional" | `5+-Unit Treatment` == "Public Hearing"),
+   `okADU Treatment` = as.numeric(`Accessory Dwelling Unit (ADU) Treatment` == "Allowed/Conditional" | `Accessory Dwelling Unit (ADU) Treatment` == "Public Hearing"),
    `ok1-Unit Min. Lot (SQFT)` = as.numeric(SQFT >= `1-Unit Min. Lot (SQFT)`),
    `ok2-Unit Min. Lot (SQFT)` = as.numeric(SQFT >= `2-Unit Min. Lot (SQFT)`),
    `ok3-Unit Min. Lot (SQFT)` = as.numeric(SQFT >= `3-Unit Min. Lot (SQFT)`),
@@ -42,7 +42,7 @@ parcelzone_oks <- parcelzone_attrs %>%
    `ok2-Unit` = `ok2-Unit Treatment` * `ok2-Unit Min. Lot (SQFT)`,
    `ok3-Unit` = `ok3-Unit Treatment` * `ok3-Unit Min. Lot (SQFT)`,
    `ok4-Unit` = `ok4-Unit Treatment` * `ok4-Unit Min. Lot (SQFT)`,
-   `ok5+-Unit` = `ok1-Unit Treatment` * `ok5+-Unit Min. Lot (SQFT)`,
+   `ok5+-Unit` = `ok5+-Unit Treatment` * `ok5+-Unit Min. Lot (SQFT)`,
    `okADU` = `okADU Treatment` * `okADU Min. Lot (SQFT)`
   ) %>%
   select(FID, PIN, matches("ok"))
