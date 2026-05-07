@@ -21,7 +21,7 @@ if (inherit == F || length(keep) > 0) {
 }
 
 
-# todo: parameterize this
+# todo: parameterize this. find new naming convention
 juri_names <- lapply(
   selected_files,
   function (x) {
@@ -32,8 +32,6 @@ juri_names <- lapply(
     }
 )
 
-
-# renames <- c("Jurisdiction_Zone_ID" = "Jurisdiction.Zone.ID")
 ## add centroids to store in files, one-time thing
 ## can apply other changes here, but let's not do that every time
 juri_parcelzones_dfs <- map2(selected_files, juri_names, 

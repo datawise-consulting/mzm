@@ -5,8 +5,8 @@ generate_zones <- T
 
 # inherit and edit previous stack?
 # inherit <- T # inherit latest stack, replacing selected geos
-inherit <- file.path(proj2243_root, "data/stacks", "20260408") # inherit stack from filepath, replacing selected geos
-# inherit <- F # entirely new stack
+# inherit <- file.path(proj2243_root, "data/stacks", "20260408") # inherit stack from filepath, replacing selected geos
+inherit <- F # entirely new stack
 
 # jurisdiction parcelzones filepath
 inpath <- file.path(
@@ -34,13 +34,15 @@ today <- format(Sys.Date(), "%Y%m%d")
 outpath <- file.path(
   proj2243_root,
   "data/stacks",
-  str_c(today, " experiment")
+  today
 )
 
 source("data prep/prep_atlas_stack.R")
+source("data prep/prep_qc_report.R")
 
 # need better way to expose juri metadata
-zone_attrs <- read_excel(file.path(proj2243_root, "data/MAP zones and jurisdictions/Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx"))
+zone_attrs_path <- file.path(proj2243_root, "data/MAP zones and jurisdictions/Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx")
+zone_attrs <- read_excel(zone_attrs_path)
 
 source("data prep/prep_eligibility.R")
 
@@ -66,7 +68,7 @@ write.csv(
   parcelzone_oks,
   file.path(outpath, "parcel_eligibility.csv"),
   row.names = FALSE, 
-  na=""
+  na = ""
 )
 
 st_write(
@@ -74,6 +76,18 @@ st_write(
   file.path(outpath, "zone_geos.geojson"),
   delete_dsn = TRUE
 )
+
+write.csv(
+  qc_report,
+  file.path(outpath, "qc_report.csv"),
+  row.names = FALSE,
+  na = ""
+)
+
+# file.copy(
+#   zone_attrs_path,
+#   file.path(outpath, "codebook.xlsx")
+#   )
 
 logpath <- file.path(outpath, "log.txt")
 file.create(logpath)
