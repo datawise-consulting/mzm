@@ -42,6 +42,14 @@ juri_parcelzones_dfs <- map2(selected_files, juri_names,
       source = .y,
       SQFT = ifelse(is.na(SQFT), as.numeric(units::set_units(st_area(geometry), "ft^2")), as.numeric(SQFT)), # there must be a better way to ensure matching data types for bind_rows down below
     ) %>% 
+  #   mutate(
+  #     Parcel_Jurisdiction_FIPS = as.character(Parcel_Jurisdiction_FIPS)
+  #   ) %>%
+  # mutate(
+  #   across(PIN:Jurisdiction_Zone_ID, as.character),
+  #   across(isVacant:long, as.numeric)
+  #   ) %>%
+    mutate(across(-c(geometry), as.character)) %>%
     # rename(any_of(renames)) %>%
     select(any_of(parcelzone_fields))
 )
@@ -56,7 +64,7 @@ juri_parcelzones_dfs <- map2(selected_files, juri_names,
 # )
 
 id_fields <- c("FID", "PIN", "Polygon_ID")
-polygon_fields <- c("geometry")
+polygon_fields <- c("geometry", "SQFT")
 attr_fields <- c(parcelzone_fields[parcelzone_fields != "geometry"], "lat", "long", "Polygon_ID")
 
 stitch_stack <- function(polys_path, points_path, join_field = "FID") {
@@ -116,6 +124,25 @@ if (nrow(prev_stack) > 0) {
   atlas_parcelzones <- new_parcelzones
 }
 
+common_area <- st_read(
+  file.path(
+    proj2243_root,
+    "data/data prep",
+    "QC",
+    "misc",
+    "common_area.geojson"
+  )
+) %>%
+  mutate(
+    across(c(FID, Polygon_ID), as.character),
+    across(PIN:zonecode, as.character),
+    across(isVacant:long, as.character)
+    )
+
+
+
+atlas_parcelzones <- bind_rows(atlas_parcelzones, common_area)
+
 atlas_parcelzones <- atlas_parcelzones %>%
   mutate(FID = 1:nrow(atlas_parcelzones)) %>%
   group_by(geometry) %>%
@@ -123,6 +150,13 @@ atlas_parcelzones <- atlas_parcelzones %>%
     Polygon_ID = cur_group_id()
     )
 
+atlas_parcelzones <- atlas_parcelzones %>%
+  mutate(
+    across(c(FID, Polygon_ID), as.numeric),
+    across(PIN:zonecode, as.character),
+    across(isVacant:long, as.numeric)
+    )
+
 # should default to dplyr filter but doesn't like if I don't specify
-parcel_polys <- atlas_parcelzones %>% select(any_of(c(id_fields, polygon_fields))) %>% dplyr::filter(!duplicated(geometry))
+parcel_polys <- atlas_parcelzones %>% select(any_of(c(id_fields, polygon_fields)), Jurisdiction_Zone_ID) %>% dplyr::filter(!duplicated(geometry))
 parcel_attrs <- atlas_parcelzones %>% data.frame %>% select(any_of(attr_fields))

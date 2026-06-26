@@ -3,9 +3,9 @@ source("setup.R")
 
 # TODO: figure out how to include regrid/ in path with regex
 regrid_filenames <- list.files(
-  path = file.path(proj_root, "data/county files"),
-  # pattern = "mi_.*\\.gpkg$",
-  pattern = "mi_wayne\\.gpkg$",
+  path = file.path(proj2243_root, "data/county files"),
+  pattern = "(mi_macomb|mi_wayne)\\.gpkg$",
+  # pattern = "mi_wayne\\.gpkg$",
   recursive = TRUE,
   full.names = TRUE
 )
@@ -53,3 +53,58 @@ wc_db <- merge(regrid_parcels, as.data.frame(select(wc_parcelzones, PIN, Parcel_
 
 
 ap_spatial_test <- st_join(ap_regrid, ap_parcels, join = st_intersects, largest = TRUE, left = FALSE)
+
+########## just jotting down changes to 250 COMMON AREA parcels for later refactor into regrid prep pipeline
+
+# TODO: figure out how to include regrid/ in path with regex
+regrid_filenames <- list.files(
+  path = file.path(proj2243_root, "data/county files"),
+  pattern = "(mi_macomb|mi_wayne)\\.gpkg$",
+  # pattern = "mi_wayne\\.gpkg$",
+  recursive = TRUE,
+  full.names = TRUE
+)
+regrid_files <- lapply(regrid_filenames, st_read)
+regrid_parcels <- bind_rows(regrid_files)
+
+regrid_parcelzones <- separate_longer_delim(regrid_parcels, "zoning", delim = "/")
+
+common_area <- regrid_parcelzones %>% dplyr::filter(parcelnumb == "COMMON AREA") %>%
+  mutate(
+    FID = NA,
+    PIN = gsub("-", "", ll_uuid, fixed = T),
+    Parcel_Jurisdiction_FIPS = NA,
+    Parcel_County_Name = "Wayne", #hardcoded for now
+    Parcel_Address = str_c(address, scity, state2, szip5, sep = ", "),
+    Jurisdiction_Zone_ID = NA,
+    isVacant = ifelse(usps_vacancy == "N", 0, 1), # check on NAs
+    SQFT = ll_gissqft,
+    Polygon_ID = NA
+    ) %>%
+  select(
+    FID,
+    PIN,
+    Parcel_Jurisdiction_Name = scity,
+    Parcel_Jurisdiction_FIPS,
+    Parcel_County_Name,
+    Parcel_Address,
+    Jurisdiction_Zone_ID,
+    zonecode = zoning,
+    isVacant,
+    SQFT,
+    lat,
+    long = lon,
+    Polygon_ID,
+    geometry = wkb_geometry
+  )
+
+st_write(
+  common_area,
+  file.path(
+    proj2243_root,
+    "data/data prep",
+    "QC",
+    "misc",
+    "common_area.geojson"
+  )
+)

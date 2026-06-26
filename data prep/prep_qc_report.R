@@ -38,8 +38,9 @@ qc_report <- parcel_qc %>%
     Parcel_Jurisdiction_FIPS, 
     Jurisdiction_Zone_ID,
     Mismatch_Type,
-    County_Parcel_Count, 
-    Juri_Parcel_Count,
+    # County_Parcel_Count, 
+    # Juri_Parcel_Count,
     Parcel_Count
   ) %>%
-  arrange(desc(County_Parcel_Count), desc(Juri_Parcel_Count))
+  # arrange(desc(County_Parcel_Count), desc(Juri_Parcel_Count))
+  arrange(desc(Parcel_Count))

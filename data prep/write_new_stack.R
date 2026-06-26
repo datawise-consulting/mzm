@@ -4,9 +4,9 @@
 generate_zones <- T
 
 # inherit and edit previous stack?
-# inherit <- T # inherit latest stack, replacing selected geos
-# inherit <- file.path(proj2243_root, "data/stacks", "20260408") # inherit stack from filepath, replacing selected geos
-inherit <- F # entirely new stack
+inherit <- T # inherit latest stack, replacing selected geos
+# inherit <- file.path(proj2243_root, "data/stacks", "20260511 common area wip") # inherit stack from filepath, replacing selected geos
+# inherit <- F # entirely new stack
 
 # jurisdiction parcelzones filepath
 inpath <- file.path(
@@ -16,9 +16,9 @@ inpath <- file.path(
 
 # counties to include, not case sensitive
 counties <- c(
-  "macomb",
-  "oakland",
-  "wayne"
+  # "macomb",
+  "oakland"
+  # "wayne"
 )
 
 # patterns to keep, not case sensitive
@@ -34,14 +34,18 @@ today <- format(Sys.Date(), "%Y%m%d")
 outpath <- file.path(
   proj2243_root,
   "data/stacks",
-  today
+  str_c(today, "macomb qc done")
 )
 
 source("data prep/prep_atlas_stack.R")
 source("data prep/prep_qc_report.R")
 
 # need better way to expose juri metadata
-zone_attrs_path <- file.path(proj2243_root, "data/MAP zones and jurisdictions/Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx")
+if (inherit == FALSE) {
+  zone_attrs_path <- file.path(proj2243_root, "data/MAP zones and jurisdictions/Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx")
+} else {
+  zone_attrs_path <- file.path(inherit, "Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx")
+}
 zone_attrs <- read_excel(zone_attrs_path)
 
 source("data prep/prep_eligibility.R")
@@ -49,6 +53,8 @@ source("data prep/prep_eligibility.R")
 if (generate_zones) {
   source("data prep/prep_zone_polygons.R")
 }
+
+source("data prep/prep_juris_meta.R")
 
 if (!dir.exists(outpath)) {
   dir.create(outpath)
@@ -62,7 +68,7 @@ write.csv(
   parcel_attrs,
   file.path(outpath, "parcel_points.csv"),
   row.names = FALSE,
-  na = ""
+  na = "",
 )
 write.csv(
   parcelzone_oks,
@@ -84,10 +90,18 @@ write.csv(
   na = ""
 )
 
-# file.copy(
-#   zone_attrs_path,
-#   file.path(outpath, "codebook.xlsx")
-#   )
+write.csv(
+  data.frame(lapply(jurisdictions_unpivot, as.character), stringsAsFactors = F),
+  file.path(outpath, "jurisdictions_expanded.csv"),
+  row.names = FALSE,
+  na = "",
+  
+)
+
+file.copy(
+  zone_attrs_path,
+  file.path(outpath, "Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx")
+  )
 
 logpath <- file.path(outpath, "log.txt")
 file.create(logpath)
