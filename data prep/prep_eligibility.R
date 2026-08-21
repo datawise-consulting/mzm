@@ -6,7 +6,10 @@ zone_attrs_clean <- zone_attrs %>%
   rename_with(~ gsub(" - .*", "", .x)) %>%
   # keep wide for now
   # pivot_longer(cols = matches("Unit|SQFT"), names_to = "Attribute", values_to = "Value") %>%
-    mutate(across(matches("SQFT"), 
+    mutate(across(matches("SQFT"),
+                  ~ ifelse(!grepl("[[:alnum:]]", .x), 0, .x)
+                  ),
+           across(matches("SQFT"), 
                   # keep first value within Value only for SQFT attrs. no SQFT per unit/BR/etc
                   ~ gsub("(\\+|[[:punct:]]|[[:space:]]).*", "", .x)
                   ),
