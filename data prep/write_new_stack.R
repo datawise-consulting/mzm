@@ -1,24 +1,29 @@
-### pseudo-parameters for setup
+### pseudo-parameters for setup. TODO: move to separate config file
 
 # generate zone geos?
 generate_zones <- T
 
 # inherit and edit previous stack?
-inherit <- T # inherit latest stack, replacing selected geos
+# inherit <- T # inherit latest stack, replacing selected geos
 # inherit <- file.path(proj2243_root, "data/stacks", "20260511 common area wip") # inherit stack from filepath, replacing selected geos
-# inherit <- F # entirely new stack
+inherit <- F # entirely new stack
 
 # jurisdiction parcelzones filepath
 inpath <- file.path(
-  proj2243_root,
-  "data/data prep/QC"
+  gdrive_root,
+  "Parcels"
 )
+
+# inpath <- file.path(
+#   proj2243_root,
+#   "data/data prep/QC"
+# )
 
 # counties to include, not case sensitive
 counties <- c(
-  # "macomb",
-  "oakland"
-  # "wayne"
+  "macomb",
+  "oakland",
+  "wayne"
 )
 
 # patterns to keep, not case sensitive
@@ -34,7 +39,7 @@ today <- format(Sys.Date(), "%Y%m%d")
 outpath <- file.path(
   proj2243_root,
   "data/stacks",
-  str_c(today, "macomb qc done")
+  str_c(today)
 )
 
 source("data prep/prep_atlas_stack.R")
