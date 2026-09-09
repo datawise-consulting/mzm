@@ -4,9 +4,9 @@
 generate_zones <- T
 
 # inherit and edit previous stack?
-# inherit <- T # inherit latest stack, replacing selected geos
+inherit <- T # inherit latest stack, replacing selected geos
 # inherit <- file.path(proj2243_root, "data/stacks", "20260511 common area wip") # inherit stack from filepath, replacing selected geos
-inherit <- F # entirely new stack
+# inherit <- F # entirely new stack
 
 # jurisdiction parcelzones filepath
 inpath <- file.path(
@@ -39,7 +39,7 @@ today <- format(Sys.Date(), "%Y%m%d")
 outpath <- file.path(
   proj2243_root,
   "data/stacks",
-  str_c(today)
+  stringr::str_c(today)
 )
 
 source("data prep/prep_atlas_stack.R")
