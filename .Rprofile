@@ -34,8 +34,14 @@ parcelzone_fields <- c(
   "Polygon_ID"
   )
 
-# Source - https://stackoverflow.com/a/78637925
-# Posted by vgilbart, modified by community. See post 'Timeline' for change history
-# Retrieved 2026-09-09, License - CC BY-SA 4.0
-lapply(names(renv::lockfile_read()$Packages), library, character.only = TRUE)
+# no console output showing load success
+suppressPackageStartupMessages(
+  # no console output listing packages
+  invisible(
+    # Source - https://stackoverflow.com/a/78637925
+    # Posted by vgilbart, modified by community. See post 'Timeline' for change history
+    # Retrieved 2026-09-09, License - CC BY-SA 4.0
+    lapply(names(renv::lockfile_read()$Packages), library, character.only = TRUE)
+  )
+)
 
