@@ -23,7 +23,7 @@ parcelzone_attrs <- merge(parcel_attrs, zone_attrs_clean, by = "Jurisdiction_Zon
 
 
 # parcelzone_attrs <- map_dfc(names(zone_attrs)[names(zone_attrs) != "Jurisdiction Zone ID"], ~ parcelzone_attrs %>%
-#                   mutate(!! str_c("ok", .x) := NA, .keep = "none")) %>% # need to figure out to do below ifs inside here. another map?
+#                   mutate(!! stringr::str_c("ok", .x) := NA, .keep = "none")) %>% # need to figure out to do below ifs inside here. another map?
 #     bind_cols(parcelzone_attrs, .)
 # 
 

@@ -1,7 +1,7 @@
 # juri-specific geojson files stored under `path`
 juri_parcelzones_files <-
   list.files(
-    path = file.path(inpath, str_c(counties, " County")),
+    path = file.path(inpath, stringr::str_c(counties, " County")),
     pattern = "parcelzones for QC\\.geojson|parcelzones\\.geojson",
     full.names = T,
     recursive = T,
@@ -10,9 +10,9 @@ juri_parcelzones_files <-
 
 # if inheriting, only read in specified files
 if (inherit == F || length(keep) > 0) {
-  # `|` regex "or" operator: keep any keep, drop any exclude
+  # `|` regex "or" operator: keep any `keep`, drop any `exclude`
   selected_files <- keep(juri_parcelzones_files, grepl(paste(keep, collapse = "|"), juri_parcelzones_files, ignore.case= T))
-  # make sure exclude not empty. negating empty drops everything
+  # make sure `exclude` not empty. negating empty drops everything
   if (length(exclude) > 0) {
     selected_files <- keep(selected_files, !grepl(paste(exclude, collapse = "|"), selected_files, ignore.case = T))
   }
@@ -34,8 +34,8 @@ juri_names <- lapply(
 
 ## add centroids to store in files, one-time thing
 ## can apply other changes here, but let's not do that every time
-juri_parcelzones_dfs <- map2(selected_files, juri_names, 
-  ~st_read(.x) %>%
+juri_parcelzones_dfs <- purrr::map2(selected_files, juri_names, 
+  ~sf::st_read(.x) %>%
     mutate(
       # lat = st_coordinates(st_centroid(geometry))[,2],
       # long = st_coordinates(st_centroid(geometry))[,1],
@@ -126,9 +126,8 @@ if (nrow(prev_stack) > 0) {
 
 common_area <- st_read(
   file.path(
-    proj2243_root,
-    "data/data prep",
-    "QC",
+    gdrive_root,
+    "Parcels",
     "misc",
     "common_area.geojson"
   )

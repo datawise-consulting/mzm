@@ -34,6 +34,8 @@ parcelzone_fields <- c(
   "Polygon_ID"
   )
 
+renv::restore()
+
 # no console output showing load success
 suppressPackageStartupMessages(
   # no console output listing packages

@@ -28,6 +28,7 @@ counties <- c(
 
 # patterns to keep, not case sensitive
 keep <- c(
+  "addison"
 )
 
 # patterns to exclude, not case sensitive
@@ -110,4 +111,4 @@ file.copy(
 
 logpath <- file.path(outpath, "log.txt")
 file.create(logpath)
-write_lines(x = list("inherit", inherit, "\n", "keep", keep, "\n", "exclude", exclude), file = logpath)
+readr::write_lines(x = list("inherit", inherit, "\n", "keep", keep, "\n", "exclude", exclude), file = logpath)
