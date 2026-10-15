@@ -1,20 +1,32 @@
 source("renv/activate.R")
 
-proj2243_root <- file.path(
+user_root <- file.path(
   "C:",
   "Users",
-  Sys.getenv("USERNAME"),
+  Sys.getenv("USERNAME")
+)
+
+proj2243_root <- file.path(
+  user_root,
   "DataWise Consulting, LLC",
   "DataWise Sharepoint - Documents",
   "Projects",
   "2243 MAP Zoning Atlas"
 )
 
-gdrive_root <- file.path(
-  "H:/.shortcut-targets-by-id/1hw_gGJyOaJMLfFw19k2FaVGCCFiAPvC5",
-  # "H:/My Drive",
-  "Michigan Zoning MAP Shared Folder",
-  "MZM Data"
+gdrive_root <- c(
+  file.path(
+    "G:/.shortcut-targets-by-id/1hw_gGJyOaJMLfFw19k2FaVGCCFiAPvC5",
+    # "H:/My Drive",
+    "Michigan Zoning MAP Shared Folder",
+    "MZM Data"
+  ),
+  file.path(
+    "H:/.shortcut-targets-by-id/1hw_gGJyOaJMLfFw19k2FaVGCCFiAPvC5",
+    # "H:/My Drive",
+    "Michigan Zoning MAP Shared Folder",
+    "MZM Data"
+  )
 )
 
 parcelzone_fields <- c(

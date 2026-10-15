@@ -11,7 +11,7 @@ juri_parcelzones_files <-
 # if inheriting, only read in specified files
 if (inherit == F || length(keep) > 0) {
   # `|` regex "or" operator: keep any `keep`, drop any `exclude`
-  selected_files <- keep(juri_parcelzones_files, grepl(paste(keep, collapse = "|"), juri_parcelzones_files, ignore.case= T))
+  selected_files <- purrr::keep(juri_parcelzones_files, grepl(paste(keep, collapse = "|"), juri_parcelzones_files, ignore.case= T))
   # make sure `exclude` not empty. negating empty drops everything
   if (length(exclude) > 0) {
     selected_files <- keep(selected_files, !grepl(paste(exclude, collapse = "|"), selected_files, ignore.case = T))
@@ -35,22 +35,22 @@ juri_names <- lapply(
 ## add centroids to store in files, one-time thing
 ## can apply other changes here, but let's not do that every time
 juri_parcelzones_dfs <- purrr::map2(selected_files, juri_names, 
-  ~sf::st_read(.x) %>%
+  ~sf::st_read(.x) |>
     mutate(
       # lat = st_coordinates(st_centroid(geometry))[,2],
       # long = st_coordinates(st_centroid(geometry))[,1],
       source = .y,
       SQFT = ifelse(is.na(SQFT), as.numeric(units::set_units(st_area(geometry), "ft^2")), as.numeric(SQFT)), # there must be a better way to ensure matching data types for bind_rows down below
-    ) %>% 
+    ) |> 
   #   mutate(
   #     Parcel_Jurisdiction_FIPS = as.character(Parcel_Jurisdiction_FIPS)
-  #   ) %>%
+  #   ) |>
   # mutate(
   #   across(PIN:Jurisdiction_Zone_ID, as.character),
   #   across(isVacant:long, as.numeric)
-  #   ) %>%
-    mutate(across(-c(geometry), as.character)) %>%
-    # rename(any_of(renames)) %>%
+  #   ) |>
+    mutate(across(-c(geometry), as.character)) |>
+    # rename(any_of(renames)) |>
     select(any_of(parcelzone_fields))
 )
 
@@ -85,9 +85,9 @@ if (inherit == T) {
     path = stack_paths,
     stamptime = format(as.Date(str_sub(basename(stack_paths), 1, 8), format = "%Y%m%d"), "%Y%m%d"),
     mtime = format(as.POSIXct(file.mtime(stack_paths)), "%Y%m%d%H%M")
-  ) %>% data.frame
+  ) |> data.frame()
   # narrow by DW-standard timestamp first, then by modified date if tied
-  latest <- filesdf %>% dplyr::filter(stamptime == max(stamptime)) %>% dplyr::filter(mtime == max(mtime))
+  latest <- filesdf |> dplyr::filter(stamptime == max(stamptime)) |> dplyr::filter(mtime == max(mtime))
   inherit <- latest$path[[1]]
   prev_stack <- stitch_stack(
     file.path(inherit, "parcel_geos.geojson"),
@@ -112,10 +112,10 @@ if (nrow(prev_stack) > 0) {
   # coerce all columns to text for easy append. 
   # probably preferable to predetermine and enforce types, 
   # but most type changes won't survive being written to disk anyway
-  prev_stack <- prev_stack %>% mutate(across(!any_of("geometry"), as.character))
+  prev_stack <- prev_stack |> mutate(across(!any_of("geometry"), as.character))
   if (nrow(new_parcelzones) > 0) {
-    new_parcelzones <- new_parcelzones %>% mutate(across(!any_of("geometry"), as.character))
-    atlas_parcelzones <- prev_stack %>% anti_join(new_parcelzones, by = "PIN")
+    new_parcelzones <- new_parcelzones |> mutate(across(!any_of("geometry"), as.character))
+    atlas_parcelzones <- prev_stack |> anti_join(new_parcelzones, by = "PIN")
     atlas_parcelzones <- bind_rows(atlas_parcelzones, new_parcelzones)
   } else {
     atlas_parcelzones <- prev_stack
@@ -136,7 +136,7 @@ if (nrow(prev_stack) > 0) {
 #     "data/data prep/QC/misc",
 #     "common_area.geojson"
 #   )
-# ) %>%
+# ) |>
 #   mutate(
 #     across(c(FID, Polygon_ID), as.character),
 #     across(PIN:zonecode, as.character),
@@ -147,14 +147,14 @@ if (nrow(prev_stack) > 0) {
 # 
 # atlas_parcelzones <- bind_rows(atlas_parcelzones, common_area)
 
-atlas_parcelzones <- atlas_parcelzones %>%
-  mutate(FID = 1:nrow(atlas_parcelzones)) %>%
-  group_by(geometry) %>%
+atlas_parcelzones <- atlas_parcelzones |>
+  mutate(FID = 1:nrow(atlas_parcelzones)) |>
+  group_by(geometry) |>
   mutate(
     Polygon_ID = cur_group_id()
     )
 
-atlas_parcelzones <- atlas_parcelzones %>%
+atlas_parcelzones <- atlas_parcelzones |>
   mutate(
     across(c(FID, Polygon_ID), as.numeric),
     across(PIN:zonecode, as.character),
@@ -162,5 +162,5 @@ atlas_parcelzones <- atlas_parcelzones %>%
     )
 
 # should default to dplyr filter but doesn't like if I don't specify
-parcel_polys <- atlas_parcelzones %>% select(any_of(c(id_fields, polygon_fields)), Jurisdiction_Zone_ID) %>% dplyr::filter(!duplicated(geometry))
-parcel_attrs <- atlas_parcelzones %>% data.frame %>% select(any_of(attr_fields))
+parcel_polys <- atlas_parcelzones |> select(any_of(c(id_fields, polygon_fields)), Jurisdiction_Zone_ID) |> dplyr::filter(!duplicated(geometry))
+parcel_attrs <- atlas_parcelzones |> data.frame() |> select(any_of(attr_fields))

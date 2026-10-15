@@ -1,11 +1,11 @@
 # zone_attrs <- read_excel(file.path(proj2243_root, "data/MAP zones and jurisdictions/Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx"))
 
-zone_attrs_clean <- zone_attrs %>% 
-  rename(Jurisdiction_Zone_ID = `Jurisdiction Zone ID`) %>%
-  select(any_of(parcelzone_fields), matches("Treatment"), matches("Min\\. Lot \\(SQFT\\)")) %>%
-  rename_with(~ gsub(" - .*", "", .x)) %>%
+zone_attrs_clean <- zone_attrs |> 
+  rename(Jurisdiction_Zone_ID = `Jurisdiction Zone ID`) |>
+  select(any_of(parcelzone_fields), matches("Treatment"), matches("Min\\. Lot \\(SQFT\\)")) |>
+  rename_with(~ gsub(" - .*", "", .x)) |>
   # keep wide for now
-  # pivot_longer(cols = matches("Unit|SQFT"), names_to = "Attribute", values_to = "Value") %>%
+  # pivot_longer(cols = matches("Unit|SQFT"), names_to = "Attribute", values_to = "Value") |>
     mutate(across(matches("SQFT"),
                   ~ ifelse(!grepl("[[:alnum:]]", .x), 0, .x)
                   ),
@@ -22,12 +22,12 @@ zone_attrs_clean <- zone_attrs %>%
 parcelzone_attrs <- merge(parcel_attrs, zone_attrs_clean, by = "Jurisdiction_Zone_ID", all.x = T)
 
 
-# parcelzone_attrs <- map_dfc(names(zone_attrs)[names(zone_attrs) != "Jurisdiction Zone ID"], ~ parcelzone_attrs %>%
-#                   mutate(!! stringr::str_c("ok", .x) := NA, .keep = "none")) %>% # need to figure out to do below ifs inside here. another map?
+# parcelzone_attrs <- map_dfc(names(zone_attrs)[names(zone_attrs) != "Jurisdiction Zone ID"], ~ parcelzone_attrs |>
+#                   mutate(!! stringr::str_c("ok", .x) := NA, .keep = "none")) |> # need to figure out to do below ifs inside here. another map?
 #     bind_cols(parcelzone_attrs, .)
 # 
 
-parcelzone_oks <- parcelzone_attrs %>%
+parcelzone_oks <- parcelzone_attrs |>
   mutate(
    `ok1-Unit Treatment` = as.numeric(`1-Unit Treatment` == "Allowed/Conditional" | `1-Unit Treatment` == "Public Hearing"),
    `ok2-Unit Treatment` = as.numeric(`2-Unit Treatment` == "Allowed/Conditional" | `2-Unit Treatment` == "Public Hearing"),
@@ -47,6 +47,6 @@ parcelzone_oks <- parcelzone_attrs %>%
    `ok4-Unit` = `ok4-Unit Treatment` * `ok4-Unit Min. Lot (SQFT)`,
    `ok5+-Unit` = `ok5+-Unit Treatment` * `ok5+-Unit Min. Lot (SQFT)`,
    `okADU` = `okADU Treatment` * `okADU Min. Lot (SQFT)`
-  ) %>%
+  ) |>
   select(FID, PIN, matches("ok"))
 

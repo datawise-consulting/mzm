@@ -8,7 +8,7 @@ jurisdictions <- read_excel(
     ),
   sheet = "Jurisdictions"
   ) 
-jurisdictions_unpivot <- jurisdictions %>%
+jurisdictions_unpivot <- jurisdictions |>
   rename(Jurisdiction_Proper_Name = `Proper Name`, 
          Jurisdiction_Display_Name = `Jurisdiction (as entered in the NZA editor)`,
          Jurisdiction_County = `County`,
@@ -16,13 +16,13 @@ jurisdictions_unpivot <- jurisdictions %>%
          Jurisdiction_FIPS_Code_County2 = `FIPS Code (County 2)`,
          Jurisdiction_FIPS_Code_County3 = `FIPS Code (County 3)`,
          Jurisdiction_FIPS_Code_MCD = `FIPS Code (MCD container)`
-         ) %>%
-  mutate(across(`Jurisdiction_FIPS_Code`:`Jurisdiction_FIPS_Code_County3`, as.character)) %>%
-  unite("Jurisdiction_FIPS_Code", Jurisdiction_FIPS_Code, Jurisdiction_FIPS_Code_County2, Jurisdiction_FIPS_Code_County3, sep = "|", na.rm = T, remove = T) %>%
-  tidyr::separate_longer_delim(cols = Jurisdiction_FIPS_Code, delim = "|") %>%
+         ) |>
+  mutate(across(`Jurisdiction_FIPS_Code`:`Jurisdiction_FIPS_Code_County3`, as.character)) |>
+  unite("Jurisdiction_FIPS_Code", Jurisdiction_FIPS_Code, Jurisdiction_FIPS_Code_County2, Jurisdiction_FIPS_Code_County3, sep = "|", na.rm = T, remove = T) |>
+  tidyr::separate_longer_delim(cols = Jurisdiction_FIPS_Code, delim = "|") |>
   # look up County onto new FIPSes by digits 3-5 of FIPS
   mutate(Jurisdiction_County = lapply(Jurisdiction_FIPS_Code, function(fips) county_FIPSes[str_sub(fips, 3, 5)][[1]]))
 
-jurisdictions_meta <- jurisdictions_unpivot %>%
+jurisdictions_meta <- jurisdictions_unpivot |>
   select(Jurisdiction_Proper_Name, Jurisdiction_County, Jurisdiction_FIPS_Code)
 
