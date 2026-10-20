@@ -11,4 +11,6 @@ zone_polys <- parcel_polys |>
 #   st_as_sf() |>
 #   summarise()
 
-zones <- merge(zone_polys, select(zone_attrs, matches("^Jurisdiction"), matches("District Name"), `Type of Zoning District`), by.x = "Jurisdiction_Zone_ID", by.y = "Jurisdiction Zone ID")
+zones <- merge(zone_polys, select(zone_attrs, matches("^Jurisdiction"), matches("District Name"), `Type of Zoning District`), by.x = "Jurisdiction_Zone_ID", by.y = "Jurisdiction Zone ID") |>
+  mutate(across(-c(geometry), as.character))
+         

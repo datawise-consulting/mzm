@@ -76,7 +76,7 @@ stitch_stack <- function(polys_path, points_path, join_field = "FID") {
 
 if (inherit == T) {
   stack_paths <- list.dirs(
-    file.path(proj2243_root, "data/stacks"),
+    file.path(gdrive_root, "MZM Data/Model"),
     full.names = T,
     recursive = F
   )

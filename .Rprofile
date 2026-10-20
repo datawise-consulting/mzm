@@ -17,16 +17,15 @@ proj2243_root <- file.path(
 gdrive_root <- c(
   file.path(
     "G:/.shortcut-targets-by-id/1hw_gGJyOaJMLfFw19k2FaVGCCFiAPvC5",
-    # "H:/My Drive",
-    "Michigan Zoning MAP Shared Folder",
-    "MZM Data"
-  ),
-  file.path(
-    "H:/.shortcut-targets-by-id/1hw_gGJyOaJMLfFw19k2FaVGCCFiAPvC5",
-    # "H:/My Drive",
-    "Michigan Zoning MAP Shared Folder",
-    "MZM Data"
+    "Michigan Zoning MAP Shared Folder"
+    # "MZM Data"
   )
+  # file.path(
+  #   "H:/.shortcut-targets-by-id/1hw_gGJyOaJMLfFw19k2FaVGCCFiAPvC5",
+  #   # "H:/My Drive",
+  #   "Michigan Zoning MAP Shared Folder",
+  #   "MZM Data"
+  # )
 )
 
 parcelzone_fields <- c(
