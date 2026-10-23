@@ -1,5 +1,3 @@
-# zone_attrs <- read_excel(file.path(proj2243_root, "data/MAP zones and jurisdictions/Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx"))
-
 zone_attrs_clean <- zone_attrs |> 
   rename(Jurisdiction_Zone_ID = `Jurisdiction Zone ID`) |>
   select(any_of(parcelzone_fields), matches("Treatment"), matches("Min\\. Lot \\(SQFT\\)")) |>

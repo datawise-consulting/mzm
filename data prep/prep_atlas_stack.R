@@ -124,29 +124,6 @@ if (nrow(prev_stack) > 0) {
   atlas_parcelzones <- new_parcelzones
 }
 
-# common_area <- st_read(
-#   # file.path(
-#   #   gdrive_root,
-#   #   "Parcels",
-#   #   "misc",
-#   #   "common_area.geojson"
-#   # )
-#   file.path(
-#     proj2243_root,
-#     "data/data prep/QC/misc",
-#     "common_area.geojson"
-#   )
-# ) |>
-#   mutate(
-#     across(c(FID, Polygon_ID), as.character),
-#     across(PIN:zonecode, as.character),
-#     across(isVacant:long, as.character)
-#     )
-# 
-# 
-# 
-# atlas_parcelzones <- bind_rows(atlas_parcelzones, common_area)
-
 atlas_parcelzones <- atlas_parcelzones |>
   mutate(FID = 1:nrow(atlas_parcelzones)) |>
   group_by(geometry) |>

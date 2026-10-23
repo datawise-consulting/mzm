@@ -22,6 +22,7 @@ inpath <- file.path(
 # )
 
 # counties to include, not case sensitive
+# TODO: read from inpath to view available counties
 counties <- c(
   "macomb",
   "oakland",
@@ -44,6 +45,9 @@ dest_folder_name <- paste(
   # , "test"
 )
 
+# empty temporary output folder after stack run?
+clear_temp_output <- T
+
 # outpath <- file.path(
 #   proj2243_root,
 #   "data/stacks",
@@ -51,13 +55,15 @@ dest_folder_name <- paste(
 # )
 outpath_parent <- file.path(
   user_root,
-  "temp"
+  "temp",
+  "mzm_outputs"
 )
 
 outpath <- file.path(
   outpath_parent,
   dest_folder_name
 )
+
 # Michigan Zoning MAP Shared Folder\MZM Data\Model
 drivepath <- googledrive::as_id("https://drive.google.com/drive/u/0/folders/14xdVn0mFOBq9QO6ZgGRZDGwW89eI6VjB")
 
@@ -119,13 +125,6 @@ st_write(
   delete_dsn = TRUE
 )
 
-# write.csv(
-#   qc_report,
-#   file.path(outpath, "qc_report.csv"),
-#   row.names = FALSE,
-#   na = ""
-# )
-
 write.csv(
   data.frame(lapply(jurisdictions_unpivot, as.character), stringsAsFactors = F),
   file.path(outpath, "jurisdictions_expanded.csv"),
@@ -134,20 +133,14 @@ write.csv(
   
 )
 
-# file.copy(
-#   zone_attrs_path,
-#   file.path(outpath, "Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx")
-#   )
-
+# copy mostly static geospatial files necessary for polygons in Tableau
 if (inherit == F) {
   copy_path <- file.path(gdrive_root, "State Wide")
 } else (
   copy_path <- inherit
 )
-
 copy_files <- list.files(copy_path, full.names = TRUE, ignore.case = TRUE)
 lapply(copy_files, function (x) { file.copy(x, outpath) })
-
 
 logpath <- file.path(outpath, "log.txt")
 file.create(logpath)
@@ -157,4 +150,8 @@ readr::write_lines(x = list("inherit", inherit, "\n", "keep", keep, "\n", "exclu
 stack_files <- list.files(outpath, full.names = TRUE)
 new_stack_folder <- drive_mkdir(dest_folder_name, drivepath)
 lapply(stack_files, function (x) { drive_upload(x, path = new_stack_folder) })
+
+if (clear_temp_output) {
+  dir_delete(outpath)
+}
 

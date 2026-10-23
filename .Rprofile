@@ -45,7 +45,8 @@ parcelzone_fields <- c(
   "Polygon_ID"
   )
 
-renv::restore()
+# install packages recorded in lockfile :woman_facepalming:
+renv::install()
 
 # no console output showing load success
 suppressPackageStartupMessages(
