@@ -53,16 +53,28 @@ clear_temp_output <- T
 #   "data/stacks",
 #   dest_folder_name
 # )
-outpath_parent <- file.path(
-  user_root,
-  "temp",
-  "mzm_outputs"
-)
 
-outpath <- file.path(
-  outpath_parent,
-  dest_folder_name
-)
+## write to temp path before upload. can't copy gsheet directly for some reason
+temp_path <- file.path(user_root, "temp")
+if (!dir.exists(temp_path)) {
+  dir.create(temp_path)
+}
+
+outpath_parent <- file.path(temp_path, "mzm_outputs")
+if (!dir.exists(outpath_parent)) {
+  dir.create(outpath_parent)
+}
+
+outpath <- file.path(outpath_parent, dest_folder_name)
+if (!dir.exists(outpath)) {
+  dir.create(outpath_parent)
+}
+
+# outpath <- file.path(
+#   gdrive_root,
+#   "MZM Data/Model",
+#   dest_folder_name
+# )
 
 # Michigan Zoning MAP Shared Folder\MZM Data\Model
 drivepath <- googledrive::as_id("https://drive.google.com/drive/u/0/folders/14xdVn0mFOBq9QO6ZgGRZDGwW89eI6VjB")
@@ -91,12 +103,6 @@ if (generate_zones) {
 }
 
 source("data prep/prep_juris_meta.R")
-
-
-# write to temp location before upload
-if (!dir.exists(outpath_parent)) {
-  dir.create(outpath_parent)
-}
 
 if (!dir.exists(outpath)) {
   dir.create(outpath)
@@ -146,7 +152,7 @@ logpath <- file.path(outpath, "log.txt")
 file.create(logpath)
 readr::write_lines(x = list("inherit", inherit, "\n", "keep", keep, "\n", "exclude", exclude), file = logpath)
 
-## upload to gdrive
+# ## upload to gdrive
 stack_files <- list.files(outpath, full.names = TRUE)
 new_stack_folder <- drive_mkdir(dest_folder_name, drivepath)
 lapply(stack_files, function (x) { drive_upload(x, path = new_stack_folder) })
