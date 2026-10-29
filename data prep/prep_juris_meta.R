@@ -9,7 +9,7 @@ county_FIPSes <- list(`099` = "Macomb", `125` = "Oakland", `163` = "Wayne")
 #   sheet = "Jurisdictions"
 #   ) 
 
-jurisdictions <- googlesheets4::read_sheet(as_id("https://docs.google.com/spreadsheets/d/1NDQCM_JLB2lRYBLDh03IlvjwgvbxDf6Xfw41lMlOFaY"), sheet = "Jurisdictions")
+jurisdictions <- googlesheets4::read_sheet(codebook, sheet = "Jurisdictions")
 jurisdictions_unpivot <- jurisdictions |>
   rename(Jurisdiction_Proper_Name = `Proper Name`, 
          Jurisdiction_Display_Name = `Jurisdiction (as entered in the NZA editor)`,

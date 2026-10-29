@@ -1,7 +1,7 @@
 ### pseudo-parameters for setup. TODO: move to separate config file
 
 # generate zone geos?
-generate_zones <- T
+generate_zones <- F
 
 # inherit and edit previous stack?
 # inherit <- T # inherit latest stack, replacing selected geos
@@ -31,6 +31,7 @@ counties <- c(
 
 # patterns to keep, not case sensitive
 keep <- c(
+  "addison"
 )
 
 # patterns to exclude, not case sensitive
@@ -42,7 +43,7 @@ exclude <- c(
 today <- format(Sys.Date(), "%Y%m%d")
 dest_folder_name <- paste(
   today
-  # , "test"
+  , "codebook copy test"
 )
 
 # empty temporary output folder after stack run?
@@ -89,7 +90,8 @@ source("data prep/prep_atlas_stack.R")
 # use the same live codebook for everything currently. 
 # having trouble reading from gdrive paths to get files dynamically.
 # could read locally, but only works for Excel not .gsheet
-zone_attrs <- googlesheets4::read_sheet(as_id("https://docs.google.com/spreadsheets/d/1NDQCM_JLB2lRYBLDh03IlvjwgvbxDf6Xfw41lMlOFaY"))
+codebook <- googledrive::as_id("https://docs.google.com/spreadsheets/d/1NDQCM_JLB2lRYBLDh03IlvjwgvbxDf6Xfw41lMlOFaY")
+zone_attrs <- googlesheets4::read_sheet(codebook)
 # } else {
 #   # zone_attrs_path <- file.path(inherit, "Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx")
 #   prev_codebook <- 
@@ -125,12 +127,14 @@ write.csv(
   na = ""
 )
 
-st_write(
-  zones,
-  file.path(outpath, "zone_geos.geojson"),
-  delete_dsn = TRUE
-)
-
+if (generate_zones == T) {
+  st_write(
+    zones,
+    file.path(outpath, "zone_geos.geojson"),
+    delete_dsn = TRUE
+  )
+}
+  
 write.csv(
   data.frame(lapply(jurisdictions_unpivot, as.character), stringsAsFactors = F),
   file.path(outpath, "jurisdictions_expanded.csv"),
@@ -146,7 +150,10 @@ if (inherit == F) {
   copy_path <- inherit
 )
 copy_files <- list.files(copy_path, full.names = TRUE, ignore.case = TRUE)
+# can't copy gsheet over normally. use `drive_cp`
+copy_files <- purrr::keep(copy_files, !grepl(x = copy_files, pattern = "Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.gsheet"))
 lapply(copy_files, function (x) { file.copy(x, outpath) })
+
 
 logpath <- file.path(outpath, "log.txt")
 file.create(logpath)
@@ -154,7 +161,8 @@ readr::write_lines(x = list("inherit", inherit, "\n", "keep", keep, "\n", "exclu
 
 # ## upload to gdrive
 stack_files <- list.files(outpath, full.names = TRUE)
-new_stack_folder <- drive_mkdir(dest_folder_name, drivepath)
+new_stack_folder <- googledrive::drive_mkdir(dest_folder_name, drivepath)
+drive_cp(codebook, new_stack_folder, name = "Michigan Zoning Map - Statewide Jurisdiction and Zoning Data")
 lapply(stack_files, function (x) { drive_upload(x, path = new_stack_folder) })
 
 if (clear_temp_output) {
