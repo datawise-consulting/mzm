@@ -51,7 +51,7 @@ juri_parcelzones_dfs <- purrr::map2(selected_files, juri_names,
   #   ) |>
     mutate(across(-c(geometry), as.character)) |>
     # rename(any_of(renames)) |>
-    select(any_of(parcelzone_fields))
+    dplyr::select(any_of(parcelzone_fields))
 )
 
 
