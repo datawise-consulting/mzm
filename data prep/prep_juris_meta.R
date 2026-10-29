@@ -1,13 +1,15 @@
 state_FIPSes <- c("26")
 county_FIPSes <- list(`099` = "Macomb", `125` = "Oakland", `163` = "Wayne")
 
-jurisdictions <- read_excel(
-  file.path(
-    proj2243_root, 
-    "data/MAP zones and jurisdictions/Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx"
-    ),
-  sheet = "Jurisdictions"
-  ) 
+# jurisdictions <- read_excel(
+#   file.path(
+#     proj2243_root, 
+#     "data/MAP zones and jurisdictions/Michigan Zoning Map - Statewide Jurisdiction and Zoning Data.xlsx"
+#     ),
+#   sheet = "Jurisdictions"
+#   ) 
+
+jurisdictions <- googlesheets4::read_sheet(as_id("https://docs.google.com/spreadsheets/d/1NDQCM_JLB2lRYBLDh03IlvjwgvbxDf6Xfw41lMlOFaY"), sheet = "Jurisdictions")
 jurisdictions_unpivot <- jurisdictions |>
   rename(Jurisdiction_Proper_Name = `Proper Name`, 
          Jurisdiction_Display_Name = `Jurisdiction (as entered in the NZA editor)`,
