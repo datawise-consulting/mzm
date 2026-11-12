@@ -4,7 +4,7 @@ zone_attrs_clean <- zone_attrs |>
   rename_with(~ gsub(" - .*", "", .x)) |>
   # keep wide for now
   # pivot_longer(cols = matches("Unit|SQFT"), names_to = "Attribute", values_to = "Value") |>
-    mutate(across(matches("SQFT"),
+    dplyr::mutate(across(matches("SQFT"),
                   ~ ifelse(!grepl("[[:alnum:]]", .x), 0, .x)
                   ),
            across(matches("SQFT"), 
@@ -21,12 +21,12 @@ parcelzone_attrs <- merge(parcel_attrs, zone_attrs_clean, by = "Jurisdiction_Zon
 
 
 # parcelzone_attrs <- map_dfc(names(zone_attrs)[names(zone_attrs) != "Jurisdiction Zone ID"], ~ parcelzone_attrs |>
-#                   mutate(!! stringr::str_c("ok", .x) := NA, .keep = "none")) |> # need to figure out to do below ifs inside here. another map?
+#                   dplyr::mutate(!! stringr::str_c("ok", .x) := NA, .keep = "none")) |> # need to figure out to do below ifs inside here. another map?
 #     bind_cols(parcelzone_attrs, .)
 # 
 
 parcelzone_oks <- parcelzone_attrs |>
-  mutate(
+  dplyr::mutate(
    `ok1-Unit Treatment` = as.numeric(`1-Unit Treatment` == "Allowed/Conditional" | `1-Unit Treatment` == "Public Hearing"),
    `ok2-Unit Treatment` = as.numeric(`2-Unit Treatment` == "Allowed/Conditional" | `2-Unit Treatment` == "Public Hearing"),
    `ok3-Unit Treatment` = as.numeric(`3-Unit Treatment` == "Allowed/Conditional" | `3-Unit Treatment` == "Public Hearing"),

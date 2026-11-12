@@ -98,7 +98,7 @@ rochester_hills <- st_read(
     "rochester/gis/rochester hills parcelzones.gpkg"
   )
 ) %>%
-  mutate(tempjname = "City of Rochester Hills") %>%
+  dplyr::mutate(tempjname = "City of Rochester Hills") %>%
   merge(
     zone_lookup,
     by.x = c("tempjname", "Zone"),
@@ -116,10 +116,10 @@ clawson <- st_read(file.path(
   oc_jurisdictions_path,
   "clawson/gis/clawson parcelzones.gpkg"
 )) %>%
-  mutate(zonecode = gsub("-", "", Zoning))
+  dplyr::mutate(zonecode = gsub("-", "", Zoning))
 
 novi <- st_read(file.path(oc_jurisdictions_path, "novi/gis/novi parcelzones.gpkg")) %>%
-  mutate(zonecode = gsub("-", "", ZONECLASS))
+  dplyr::mutate(zonecode = gsub("-", "", ZONECLASS))
 
 south_lyon <- st_read(
   file.path(
@@ -127,14 +127,14 @@ south_lyon <- st_read(
     "south lyon/gis/south lyon parcels coded 20251222.gpkg"
   )
 ) %>%
-  mutate(tempjname = "south lyon")
+  dplyr::mutate(tempjname = "south lyon")
 milford <- st_read(
   file.path(
     oc_jurisdictions_path,
     "milford (village)/gis/milford village parcelzones.gpkg"
   )
 ) %>%
-  mutate(
+  dplyr::mutate(
     fips = 2612553960,
     tempjname = "milford",
     `zonecode` = gsub("-", "", ZONECODE)
@@ -145,7 +145,7 @@ ferndale <- st_read(
     "ferndale/gis/Ferndale_Zoning_GIS_2025_gdb/Zoning_Parcels.shp"
   )
 ) %>%
-  mutate(tempjname = "ferndale", `zone code` = gsub("-", "", ZONING)) %>%
+  dplyr::mutate(tempjname = "ferndale", `zone code` = gsub("-", "", ZONING)) %>%
   rename(geom = geometry)
 
 commerce <- st_read(
@@ -154,7 +154,7 @@ commerce <- st_read(
     "commerce township (charter township)/gis/commerce parcels zoned.gpkg"
   )
 ) %>%
-  mutate(
+  dplyr::mutate(
     fips = 2612517640,
     `zone code` = gsub("-", "", EXIST_ZONE),
     tempjname = "Commerce Charter Township",
@@ -174,7 +174,7 @@ birmingham <- st_read(
     "birmingham/gis/birmingham parcels recoded fixed 20251112.geojson"
   )
 ) %>%
-  mutate(tempjname = "birmingham") %>%
+  dplyr::mutate(tempjname = "birmingham") %>%
   rename(geom = geometry)
 
 berkley <- st_read(
@@ -183,7 +183,7 @@ berkley <- st_read(
     "berkley/gis/berkley parcels re-coded 20260128.gpkg"
   )
 ) %>%
-  mutate(tempjname = "berkley") %>%
+  dplyr::mutate(tempjname = "berkley") %>%
   rename(geom = geometry)
 
 ## spatially joined auburn hills, beverly hills, bingham farms, southfield
@@ -250,7 +250,7 @@ oc_parcelzones <- bind_rows(gdrive_coded_parcelzones, sp_parcelzones) %>%
         KEYPIN,
         remove = TRUE,
         na.rm = TRUE) %>%
-  mutate(
+  dplyr::mutate(
     # FID = NA,
     # if PIN gets concatted to self where !is.na(PIN) & !is.na(KEYPIN)
     PIN = as.character(ifelse(
@@ -272,7 +272,7 @@ oc_parcelzones <- bind_rows(gdrive_coded_parcelzones, sp_parcelzones) %>%
     remove = TRUE,
     na.rm = TRUE
   ) %>%
-  mutate(
+  dplyr::mutate(
     Jurisdiction_Zone_ID = ifelse(Jurisdiction_Zone_ID %in% c("", "NA", " "), NA, Jurisdiction_Zone_ID)
   ) %>%
   unite(
@@ -324,7 +324,7 @@ oc_parcelzones <- st_read(file.path(
 #                              by = "municipality_fips",
 #                              suffixes = c("", ".y")) %>%
 #   select(names(cleaned_parcelzones), municipality_id = id) %>%
-#   mutate(municipality_fips = NULL)
+#   dplyr::mutate(municipality_fips = NULL)
 
 ## macomb county
 mc <- st_read(
@@ -356,7 +356,7 @@ mc_parcelzones <- separate_longer_delim(mc, zoning, delim = "/")
 mc_zone_lookup <- readxl::read_excel(file.path(proj_root, "data/data prep/intermediate", "mc zones mismatch 20260204.xlsx"))
 
 mc_parcelzones <- st_sf(merge(mc_parcelzones, mc_zone_lookup, by = c("zoning", "scity"))) %>%
-  mutate(
+  dplyr::mutate(
     # FID = NA,
     PIN = parcelnumb_no_formatting,
     Parcel_Jurisdiction_Name = scity,
@@ -369,7 +369,7 @@ mc_parcelzones <- st_sf(merge(mc_parcelzones, mc_zone_lookup, by = c("zoning", "
     isVacant = ifelse(usps_vacancy == "N", 0, 1) # check on NAs
   ) %>%
   rename(geom = wkb_geometry) %>%
-  mutate(
+  dplyr::mutate(
     Jurisdiction_Zone_ID = ifelse(Jurisdiction_Zone_ID %in% c("", "NA", " "), NA, Jurisdiction_Zone_ID)
   ) %>%
   select(any_of(parcel_names))
@@ -410,15 +410,15 @@ wc_juris_files <- list.files(
 
 wc_juris <- wc_juris_files %>% map_df( ~ {
   read_csv(.x, show_col_types = FALSE) %>%
-    mutate(across(everything(), as.character)) %>%
-    mutate(AssessmentCity = gsub(
+    dplyr::mutate(across(everything(), as.character)) %>%
+    dplyr::mutate(AssessmentCity = gsub(
       "Municipal Assessment|[[:punct:]]",
       "",
       str_extract(.x, "Municipal Assessment/([[:alpha:]]|_| )*")
     ))
   #, "Municipal Assessment|\\/"))
 }) %>% bind_rows %>%
-  mutate(Parcels.pnum = gsub(" ", "", Parcels.pnum))
+  dplyr::mutate(Parcels.pnum = gsub(" ", "", Parcels.pnum))
 wc_parcelzones <- merge(wc_parcels,
                         wc_juris,
                         by.x = "packedParc",
@@ -434,7 +434,7 @@ wc_parcelzones <- merge(wc_parcels,
 #   `Jurisdiction from spatial` = Label,
 #   FIPSCode
 # ) %>%
-#   mutate(
+#   dplyr::mutate(
 #   `Jurisdiction FIPS from spatial` = ifelse(is.na(FIPSCode), NA, paste("26163", FIPSCode, sep = "")),
 #   FIPSCode = NULL,
 #   `Missing geom` = st_is_empty(geom)
@@ -452,7 +452,7 @@ wc_parcelzones <- merge(wc_parcels,
 # wc_parcels_missing_jurisdictions <- wc_parcelzone_jurisdictions %>% filter(is.na(`Jurisdiction from spatial`))
 
 # # patch up Jurisdictions
-# wc_parcelzones_fix_juris <- wc_parcelzones %>% mutate(
+# wc_parcelzones_fix_juris <- wc_parcelzones %>% dplyr::mutate(
 #   Jurisdiction_propcity = propcity,
 #   Jurisdiction_ParcelMaster.propcity = ParcelMaster.propcity,
 #   Jurisdiction_assessment = str_to_upper(AssessmentCity),
@@ -470,10 +470,10 @@ wc_parcelzones_with_FIPS <- wc_parcelzones %>%
   filter(!is.na(FIPSCode))
 wc_parcelzones_no_FIPS <- wc_parcelzones %>%
   filter(is.na(FIPSCode)) %>%
-  inner_join(y = mutate(select(jurisdictions_codebook, `FIPS Code`, `Proper Name`), `Proper Name` = gsub("charter ", "", `Proper Name`, ignore.case = TRUE)), join_by(New.Name == `Proper Name`), keep = TRUE)
+  inner_join(y = dplyr::mutate(select(jurisdictions_codebook, `FIPS Code`, `Proper Name`), `Proper Name` = gsub("charter ", "", `Proper Name`, ignore.case = TRUE)), join_by(New.Name == `Proper Name`), keep = TRUE)
 
 wc_parcelzones <- bind_rows(wc_parcelzones_with_FIPS, wc_parcelzones_no_FIPS) %>% 
-  mutate(
+  dplyr::mutate(
     FIPSCode = ifelse(!is.na(FIPSCode), paste("26163", FIPSCode, sep = ""), NA)
   ) %>%
   unite(
@@ -519,14 +519,14 @@ wc_parcelzones <- wc_parcelzones %>%
     zonecode = `cleaned zonecode`,
     Jurisdiction_Zone_ID = `lookup zone id`
   ) %>%
-  mutate(
+  dplyr::mutate(
     geom = st_make_valid(geom),
     SQFT = as.numeric(units::set_units(st_area(geom), "ft^2")),
     isVacant = as.integer(ParcelMaster.vacant),
     OBJECTID = NA,
     Parcel_County_Name = "Wayne"
   ) %>%
-  mutate(
+  dplyr::mutate(
     Jurisdiction_Zone_ID = ifelse(Jurisdiction_Zone_ID %in% c("", "NA", " "), NA, Jurisdiction_Zone_ID)
   ) %>%
   select(any_of(parcel_names))
@@ -555,10 +555,10 @@ wc_parcelzones <- st_read(file.path(
 ### combine into master file
 pilot_parcelzones <-  bind_rows(oc_parcelzones, mc_parcelzones, wc_parcelzones) 
 pilot_parcelzones %<>% 
-  mutate(geom = st_make_valid(geom)) %>%
+  dplyr::mutate(geom = st_make_valid(geom)) %>%
   filter(st_is_valid(geom) == TRUE)
 pilot_parcelzones %<>%
-  mutate(
+  dplyr::mutate(
     FID = 1:nrow(.),
     zonecode = ifelse(zonecode == " ", NA, zonecode),
     Jurisdiction_Zone_ID = ifelse(Jurisdiction_Zone_ID %in% c("", "NA", " "), NA, Jurisdiction_Zone_ID),
@@ -571,7 +571,7 @@ wc_parcelzones <- NULL
 
 pilot_parcelzones$Centroid <- st_centroid(pilot_parcelzones$geom)
 pilot_parcelzones %<>% 
-  mutate(
+  dplyr::mutate(
     long = st_coordinates(Centroid)[,1],
     lat = st_coordinates(Centroid)[,2]
     )

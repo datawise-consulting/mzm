@@ -19,7 +19,7 @@ parcel_qc <- parcel_attrs |>
 qc_report <- parcel_qc |>
   # left_join(county_qc, by = join_by(Parcel_County_Name)) |>
   # left_join(juri_qc, by = join_by(Parcel_County_Name, Parcel_Jurisdiction_Name)) |>
-  mutate(Mismatch_Type =
+  dplyr::mutate(Mismatch_Type =
        ifelse(
          str_sub(Jurisdiction_Zone_ID, -3) == "000",
          "no zone",

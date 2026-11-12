@@ -36,20 +36,20 @@ juri_names <- lapply(
 ## can apply other changes here, but let's not do that every time
 juri_parcelzones_dfs <- purrr::map2(selected_files, juri_names, 
   ~sf::st_read(.x) |>
-    mutate(
+    dplyr::mutate(
       # lat = st_coordinates(st_centroid(geometry))[,2],
       # long = st_coordinates(st_centroid(geometry))[,1],
       source = .y,
       SQFT = ifelse(is.na(SQFT), as.numeric(units::set_units(st_area(geometry), "ft^2")), as.numeric(SQFT)), # there must be a better way to ensure matching data types for bind_rows down below
     ) |> 
-  #   mutate(
+  #   dplyr::mutate(
   #     Parcel_Jurisdiction_FIPS = as.character(Parcel_Jurisdiction_FIPS)
   #   ) |>
-  # mutate(
+  # dplyr::mutate(
   #   across(PIN:Jurisdiction_Zone_ID, as.character),
   #   across(isVacant:long, as.numeric)
   #   ) |>
-    mutate(across(-c(geometry), as.character)) |>
+    dplyr::mutate(across(-c(geometry), as.character)) |>
     # rename(any_of(renames)) |>
     dplyr::select(any_of(parcelzone_fields))
 )
@@ -112,9 +112,9 @@ if (nrow(prev_stack) > 0) {
   # coerce all columns to text for easy append. 
   # probably preferable to predetermine and enforce types, 
   # but most type changes won't survive being written to disk anyway
-  prev_stack <- prev_stack |> mutate(across(!any_of("geometry"), as.character))
+  prev_stack <- prev_stack |> dplyr::mutate(across(!any_of("geometry"), as.character))
   if (nrow(new_parcelzones) > 0) {
-    new_parcelzones <- new_parcelzones |> mutate(across(!any_of("geometry"), as.character))
+    new_parcelzones <- new_parcelzones |> dplyr::mutate(across(!any_of("geometry"), as.character))
     atlas_parcelzones <- prev_stack |> anti_join(new_parcelzones, by = "PIN")
     atlas_parcelzones <- bind_rows(atlas_parcelzones, new_parcelzones)
   } else {
@@ -125,14 +125,14 @@ if (nrow(prev_stack) > 0) {
 }
 
 atlas_parcelzones <- atlas_parcelzones |>
-  mutate(FID = 1:nrow(atlas_parcelzones)) |>
+  dplyr::mutate(FID = 1:nrow(atlas_parcelzones)) |>
   group_by(geometry) |>
-  mutate(
+  dplyr::mutate(
     Polygon_ID = cur_group_id()
     )
 
 atlas_parcelzones <- atlas_parcelzones |>
-  mutate(
+  dplyr::mutate(
     across(c(FID, Polygon_ID), as.numeric),
     across(PIN:Jurisdiction_Zone_ID, as.character),
     across(isVacant:long, as.numeric)

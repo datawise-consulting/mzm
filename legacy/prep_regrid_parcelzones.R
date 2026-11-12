@@ -44,7 +44,7 @@ regrid_parcelzones <- separate_longer_delim(regrid_parcels, "zoning", delim = "/
         "County"
       )
     )) %>%
-      mutate(
+      dplyr::mutate(
         scity =  jurisdiction_name_to_scity(Jurisdiction)
     )
   
@@ -70,7 +70,7 @@ regrid_parcels <- bind_rows(regrid_files)
 regrid_parcelzones <- separate_longer_delim(regrid_parcels, "zoning", delim = "/")
 
 common_area <- regrid_parcelzones %>% dplyr::filter(parcelnumb == "COMMON AREA") %>%
-  mutate(
+  dplyr::mutate(
     FID = NA,
     PIN = gsub("-", "", ll_uuid, fixed = T),
     Parcel_Jurisdiction_FIPS = NA,
