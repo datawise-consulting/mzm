@@ -134,7 +134,7 @@ atlas_parcelzones <- atlas_parcelzones |>
 atlas_parcelzones <- atlas_parcelzones |>
   mutate(
     across(c(FID, Polygon_ID), as.numeric),
-    across(PIN:zonecode, as.character),
+    across(PIN:Jurisdiction_Zone_ID, as.character),
     across(isVacant:long, as.numeric)
     )
 
