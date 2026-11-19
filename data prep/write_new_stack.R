@@ -1,7 +1,7 @@
 ### pseudo-parameters for setup. TODO: move to separate config file
 
 # generate zone geos?
-generate_zones <- F
+generate_zones <- T
 
 # inherit and edit previous stack?
 # inherit <- T # inherit latest stack, replacing selected geos
@@ -31,7 +31,6 @@ counties <- c(
 
 # patterns to keep, not case sensitive
 keep <- c(
-  "addison"
 )
 
 # patterns to exclude, not case sensitive
@@ -43,7 +42,7 @@ exclude <- c(
 today <- format(Sys.Date(), "%Y%m%d")
 dest_folder_name <- paste(
   today
-  , "codebook copy test"
+  # , "test"
 )
 
 # empty temporary output folder after stack run?
